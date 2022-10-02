@@ -1,40 +1,23 @@
 package listGoFiles
 
 import (
-	"fmt"
-	"log"
-	"os"
+	"io/fs"
 	"path/filepath"
 )
 
-func main() {
-	var root string
-	if len(os.Args) == 1 {
-		log.Fatal("No path given, Please specify path.")
-		return
-	}
-	if root = os.Args[1]; root == "" {
-		log.Fatal("No path given, Please specify path.")
-		return
-	}
-	// filepath.Walk
-	files, err := FilePathWalkDir(root)
-	if err != nil {
-		panic(err)
-	}
-	for _, file := range files {
-		fmt.Println(file)
-	}
-
-}
+var files []string
 
 func FilePathWalkDir(root string) ([]string, error) {
-	var files []string
-	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
-		if !info.IsDir() {
+	err := filepath.WalkDir(root, visit)
+	return files, err
+}
+
+func visit(path string, di fs.DirEntry, err error) error {
+	if !di.IsDir() {
+		if filepath.Ext(path) == ".go" {
+			// fmt.Println(path)
 			files = append(files, path)
 		}
-		return nil
-	})
-	return files, err
+	}
+	return nil
 }
