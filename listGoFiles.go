@@ -8,14 +8,13 @@ import (
 var files []string
 
 func FilePathWalkDir(root string) ([]string, error) {
-	err := filepath.WalkDir(root, visit)
+	err := filepath.WalkDir(root, fnOnVisit)
 	return files, err
 }
 
-func visit(path string, di fs.DirEntry, err error) error {
+func fnOnVisit(path string, di fs.DirEntry, err error) error {
 	if !di.IsDir() {
 		if filepath.Ext(path) == ".go" {
-			// fmt.Println(path)
 			files = append(files, path)
 		}
 	}
